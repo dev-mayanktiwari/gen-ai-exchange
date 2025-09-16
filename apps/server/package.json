@@ -20,6 +20,7 @@
     "@types/express": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20.17.19",
+    "@types/uuid": "^10.0.0",
     "esbuild": "^0.25.4",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
@@ -27,6 +28,7 @@
   },
   "dependencies": {
     "@google-cloud/firestore": "^7.11.3",
+    "@google-cloud/storage": "^7.17.1",
     "@workspace/constants": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/types": "workspace:*",

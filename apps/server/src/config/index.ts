@@ -2,12 +2,21 @@ import { logger } from "@workspace/utils";
 import dotenv from "dotenv";
 dotenv.config();
 
-type ConfigKeys = "PORT" | "NODE_ENV" | "FIREBASE_API_KEY";
+type ConfigKeys =
+  | "PORT"
+  | "NODE_ENV"
+  | "FIREBASE_API_KEY"
+  | "RAW_UPLOAD_BUCKET"
+  | "PROCESSED_UPLOAD_BUCKET"
+  | "GOOGLE_APPLICATION_CREDENTIALS";
 
 const _config: Record<ConfigKeys, string | undefined> = {
   PORT: process.env.PORT,
   NODE_ENV: process.env.NODE_ENV,
   FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
+  RAW_UPLOAD_BUCKET: process.env.RAW_UPLOAD_BUCKET,
+  PROCESSED_UPLOAD_BUCKET: process.env.PROCESSED_UPLOAD_BUCKET,
+  GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
 };
 
 export const AppConfig = {

@@ -9,6 +9,7 @@ import healthRouter from "./routes/healthRoutes";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
 import authRouter from "./routes/authRouter";
 import { initFirebase } from "./lib/firebase";
+import productRouter from "./routes/productRouter";
 
 // Initialize Firebase Admin SDK
 initFirebase();
@@ -31,6 +32,7 @@ app.use(express.urlencoded({ extended: false }));
 // Routes
 app.use("/api/v1/health", healthRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/products", productRouter);
 
 //404 Handler
 app.use((req: Request, _: Response, next: NextFunction) => {
