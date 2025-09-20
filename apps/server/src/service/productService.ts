@@ -7,7 +7,7 @@ export const ProductService = {
     const db = getFirestoreDb();
     const productId = `pid_${uuidV4().split("-")[0]}`;
 
-    const productData = {
+    const productData: Product = {
       id: productId,
       userId,
       status: "DRAFT",
@@ -46,5 +46,37 @@ export const ProductService = {
       .doc(productId)
       .get();
     return doc.exists && doc.data()?.userId === userId;
+  },
+
+  async markUploadsComplete(
+    productId: string,
+    files: {
+      images: Array<{
+        gcsPath: string;
+        width?: number;
+        height?: number;
+      }>;
+      voice?: {
+        gcsPath: string;
+        durationMs?: number;
+      };
+    }
+  ) {
+    const db = getFirestoreDb();
+
+    await db
+      .collection("products")
+      .doc(productId)
+      .update({
+        status: "PROCESSING",
+        photos: files.images,
+        raw: files.voice ? { voice: files.voice.gcsPath } : {},
+        progress: {
+          step: "UPLOAD_COMPLETE",
+          percent: 0,
+          updateAt: new Date(),
+        },
+        updatedAt: new Date(),
+      });
   },
 };

@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@google-cloud/firestore": "^7.11.3",
+    "@google-cloud/pubsub": "^5.2.0",
     "@google-cloud/storage": "^7.17.1",
     "@workspace/constants": "workspace:*",
     "@workspace/db": "workspace:*",

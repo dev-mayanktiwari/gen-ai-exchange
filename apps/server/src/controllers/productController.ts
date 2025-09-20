@@ -1,10 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { asyncErrorHandler, httpError, httpResponse } from "@workspace/utils";
 import { ErrorStatusCodes, SuccessStatusCodes } from "@workspace/constants";
-import { AuthenticatedRequest, ProductDraftSchema } from "@workspace/types";
+import {
+  AuthenticatedRequest,
+  ProductDraftSchema,
+  uploadCompleteSchema,
+} from "@workspace/types";
 import { ProductService } from "../service/productService";
 import { AppConfig } from "../config";
 import { StorageService } from "../service/storageService";
+import { JobService } from "../service/jobService";
+import { PubSubService } from "../service/pubSubService";
 
 export default {
   create: asyncErrorHandler(
@@ -33,33 +39,50 @@ export default {
       console.log("Product ID:", productId);
 
       const uploadBucket = String(AppConfig.get("RAW_UPLOAD_BUCKET"));
-      const imageUrls: string[] = [];
+      const imageUploads: { signedUrl: string; gcsPath: string }[] = [];
 
       for (let i = 0; i < photosCount; i++) {
-        const imagePath = `users/${(req as AuthenticatedRequest).user?.uid}/products/${productId.id}/raw/img-${i + 1}.jpg`;
+        const imagePath = `users/${
+          (req as AuthenticatedRequest).user?.uid
+        }/products/${productId.id}/raw/img-${i + 1}.jpg`;
+
         const signedUrl = await StorageService.getSignedUploadUrl(
           uploadBucket,
           imagePath,
           "image/jpeg"
         );
-        imageUrls.push(signedUrl);
+
+        imageUploads.push({
+          signedUrl,
+          gcsPath: `gs://${uploadBucket}/${imagePath}`,
+        });
       }
 
-      let voiceUrl: string | undefined;
+      let voiceUpload: { signedUrl: string; gcsPath: string } | undefined =
+        undefined;
+
       if (includeVoice) {
-        const voicePath = `users/${(req as AuthenticatedRequest).user?.uid}/products/${productId}/raw/voice.wav`;
-        voiceUrl = await StorageService.getSignedUploadUrl(
+        const voicePath = `users/${
+          (req as AuthenticatedRequest).user?.uid
+        }/products/${productId.id}/raw/voice.wav`;
+
+        const signedUrl = await StorageService.getSignedUploadUrl(
           uploadBucket,
           voicePath,
           "audio/wav"
         );
+
+        voiceUpload = {
+          signedUrl,
+          gcsPath: `gs://${uploadBucket}/${voicePath}`,
+        };
       }
 
       httpResponse(req, res, SuccessStatusCodes.OK, "Draft Created", {
         productId,
         uploadUrls: {
-          images: imageUrls,
-          voice: voiceUrl,
+          images: imageUploads,
+          voice: voiceUpload,
         },
       });
     }
@@ -99,6 +122,100 @@ export default {
       httpResponse(req, res, SuccessStatusCodes.OK, "Product Details", {
         product,
       });
+    }
+  ),
+
+  markUploadsComplete: asyncErrorHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const productId = req.params.productId;
+
+      if (!productId) {
+        return httpError(
+          next,
+          new Error("Product ID is required"),
+          req,
+          ErrorStatusCodes.CLIENT_ERROR.BAD_REQUEST
+        );
+      }
+
+      const product = await ProductService.getProductById(productId);
+      if (!product) {
+        return httpError(
+          next,
+          new Error("Product not found"),
+          req,
+          ErrorStatusCodes.CLIENT_ERROR.NOT_FOUND
+        );
+      }
+      if (product.userId !== (req as AuthenticatedRequest)?.user?.uid) {
+        return httpError(
+          next,
+          new Error("Forbidden"),
+          req,
+          ErrorStatusCodes.CLIENT_ERROR.FORBIDDEN
+        );
+      }
+
+      const body = req.body;
+      const safeParse = uploadCompleteSchema.safeParse(body);
+      if (!safeParse.success) {
+        return httpError(
+          next,
+          new Error("Invalid input"),
+          req,
+          ErrorStatusCodes.CLIENT_ERROR.BAD_REQUEST,
+          safeParse.error.flatten()
+        );
+      }
+      const { images, voice } = safeParse.data;
+
+      const userPrefix = `gs://${AppConfig.get("RAW_UPLOAD_BUCKET")}/users/${
+        (req as AuthenticatedRequest).user?.uid
+      }/products/${productId}/raw/`;
+      const allPaths = [...images.map((img) => img.gcsPath)];
+      if (voice) allPaths.push(voice.gcsPath);
+
+      const invalidPath = allPaths.find((path) => !path.startsWith(userPrefix));
+      if (invalidPath) {
+        return httpError(
+          next,
+          new Error("Invalid file paths"),
+          req,
+          ErrorStatusCodes.CLIENT_ERROR.BAD_REQUEST
+        );
+      }
+
+      await ProductService.markUploadsComplete(productId, {
+        images,
+        voice,
+      });
+
+      const jobId = await JobService.createJob(String(productId));
+
+      const messageData = {
+        jobId,
+        productId,
+        userId: (req as AuthenticatedRequest).user?.uid as string,
+        imagePaths: images.map((img) => img.gcsPath),
+        voicePath: voice?.gcsPath,
+        preferredLanguage: product.preferredLanguage,
+      };
+
+      const messageId = await PubSubService.publishMessage(
+        "generate-assets",
+        messageData
+      );
+
+      httpResponse(
+        req,
+        res,
+        SuccessStatusCodes.OK,
+        "Uploads marked as complete",
+        {
+          jobId,
+          messageId,
+        }
+      );
     }
   ),
 };
