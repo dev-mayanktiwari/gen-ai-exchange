@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package kalakriti;
+
+import "google/protobuf/timestamp.proto";
+
+message Product {
+    string id = 1;
+    string user_id = 2;
+    string status = 3;
+    string title = 4;
+    string description = 5;
+
+    message Photo {
+        string gcs_path = 1;
+        string width = 2;
+        string height = 3;
+    }
+
+    repeated Photo photos = 6;
+
+    message Raw {
+        string voice_path = 1;
+        string duration_ms = 2;
+    }
+
+    Raw raw = 7;
+
+    message Progress {
+        string step = 1;
+        int32 duration_ms = 2;
+        google.protobuf.Timestamp updated_at = 3;
+    }
+
+    Progress progress = 8;
+    string preferred_language = 9;
+    google.protobuf.Timestamp created_at = 10;
+    google.protobuf.Timestamp updated_at = 11;
+}
+
+message CreateDraftRequest {
+    string user_id = 1;
+    int32 photos_count = 2;
+    bool include_voice = 3;
+    string preferred_language = 4;
+}
+
+message CreateDraftResponse {
+    string product_id = 1;
+    message UploadUrls {
+        repeated string images = 1;
+        string voice = 2;
+    }
+    UploadUrls upload_urls = 2;
+}
+
+message GetProductRequest {
+    string product_id = 1;
+    string user_id = 2;
+}
+
+message GetProductResponse {
+    Product product = 1;
+}
+
+message UpdateUploadCompleteRequest {
+    string product_id = 1;
+    string user_id = 2;
+
+    message ImageInfo {
+        string gcs_path = 1;
+        string width = 2;
+        string height = 3;
+    }
+
+    repeated ImageInfo images = 3;
+
+    message VoiceInfo {
+        string gcs_path = 1;
+        string duration_ms = 2;
+    }
+
+    VoiceInfo voice = 4;
+}
+
+message UpdateUploadCompleteResponse {
+    string job_id = 1;
+    string message_id = 2;
+}
+
+message UpdateProductStatusRequest {
+    string product_id = 1;
+    string status = 2; 
+    Progress progress = 3;
+}
+message UpdateProductStatusResponse {
+    bool success = 1;
+}
+
+message Progress {
+    string step = 1;
+    int32 percent = 2;
+}
+
+service DataService {
+    rpc CreateDraft(CreateDraftRequest) returns (CreateDraftResponse);
+    rpc GetProduct(GetProductRequest) returns (GetProductResponse);
+    rpc UpdateUploadComplete(UpdateUploadCompleteRequest) returns (UpdateUploadCompleteResponse);
+    rpc UpdateProductStatus(UpdateProductStatusRequest) returns (UpdateProductStatusResponse);
+}
