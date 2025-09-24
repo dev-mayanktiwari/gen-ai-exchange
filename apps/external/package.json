@@ -1,0 +1,30 @@
+{
+  "name": "external",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+    "build": "esbuild src/index.ts --platform=node --bundle --outdir=dist",
+    "start": "pnpm run build && node dist/index.js",
+    "clean": "rm -rf dist"
+  },
+  "license": "ISC",
+  "author": {
+    "name": "Mayank Tiwari",
+    "email": "devmayanktiwari@gmail.com"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.19",
+    "@types/uuid": "^10.0.0",
+    "esbuild": "^0.25.4",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^7.11.3",
+    "@google-cloud/pubsub": "^5.2.0",
+    "@google-cloud/storage": "^7.17.1",
+    "@grpc/grpc-js": "^1.14.0"
+  }
+}
