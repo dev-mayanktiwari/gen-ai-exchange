@@ -1,51 +1,32 @@
-import { v4 as uuidV4 } from "uuid";
-import { getFirestoreDb } from "../lib/firestore";
+import axios from "axios";
 import { Product } from "../lib/product";
+
+const DATA_SERVICE_URL =
+  process.env.DATA_SERVICE_URL || "http://localhost:4001";
 
 export const ProductService = {
   async createDraft(userId: string, preferredLanguage?: string) {
-    const db = getFirestoreDb();
-    const productId = `pid_${uuidV4().split("-")[0]}`;
-
-    const productData: Product = {
-      id: productId,
+    const { data } = await axios.post(`${DATA_SERVICE_URL}/products/drafts`, {
       userId,
-      status: "DRAFT",
-      preferredLanguage: preferredLanguage || "en",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    await db.collection("products").doc(productId).set(productData);
-    return productData;
+      preferredLanguage,
+    });
+    return data.product as Product;
   },
 
   async getProductById(productId: string) {
-    const doc = await getFirestoreDb()
-      .collection("products")
-      .doc(productId)
-      .get();
-    return doc.exists ? (doc.data() as Product) : null;
+    const { data } = await axios.get(
+      `${DATA_SERVICE_URL}/products/${productId}`
+    );
+    return (data.product as Product) ?? null;
   },
 
   async updateProduct(productId: string, data: Partial<Product>) {
-    const productRef = getFirestoreDb().collection("products").doc(productId);
-
-    const now = new Date();
-    const productData = {
-      ...data,
-      updatedAt: now,
-    };
-
-    await productRef.set(productData, { merge: true });
+    await axios.patch(`${DATA_SERVICE_URL}/products/${productId}`, data);
   },
 
   async userOwnsProduct(userId: string, productId: string) {
-    const doc = await getFirestoreDb()
-      .collection("products")
-      .doc(productId)
-      .get();
-    return doc.exists && doc.data()?.userId === userId;
+    const product = await this.getProductById(productId);
+    return !!product && product.userId === userId;
   },
 
   async markUploadsComplete(
@@ -62,21 +43,9 @@ export const ProductService = {
       };
     }
   ) {
-    const db = getFirestoreDb();
-
-    await db
-      .collection("products")
-      .doc(productId)
-      .update({
-        status: "PROCESSING",
-        photos: files.images,
-        raw: files.voice ? { voice: files.voice.gcsPath } : {},
-        progress: {
-          step: "UPLOAD_COMPLETE",
-          percent: 0,
-          updateAt: new Date(),
-        },
-        updatedAt: new Date(),
-      });
+    await axios.post(
+      `${DATA_SERVICE_URL}/products/${productId}/uploads/complete`,
+      files
+    );
   },
 };
