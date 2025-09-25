@@ -29,7 +29,6 @@
   "dependencies": {
     "@google-cloud/storage": "^7.17.1",
     "@workspace/constants": "workspace:*",
-    "@workspace/db": "workspace:*",
     "@workspace/types": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "@workspace/utils": "workspace:*",
