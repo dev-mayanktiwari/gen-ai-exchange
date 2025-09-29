@@ -4,15 +4,15 @@ import { ApplicationEnvironment } from "@workspace/constants";
 import { TApplicationEnvironment } from "@workspace/constants";
 import { logger } from "./logger";
 
-const httpResponse = (
+const httpResponse = <T>(
   req: Request,
   res: Response,
   responseStatusCode: number,
   responseMessage: string,
-  data: unknown = null,
+  data: T | null = null,
   env: TApplicationEnvironment = "development"
 ) => {
-  const response: THTTPResponse = {
+  const response: THTTPResponse<T> = {
     success: true,
     statusCode: responseStatusCode,
     request: {

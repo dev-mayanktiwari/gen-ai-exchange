@@ -3,7 +3,7 @@ import {
   CreateProductDraftRequest,
   UpdateProductRequest,
   MarkUploadsCompleteRequest,
-  ProductResponse
+  ProductResponse,
 } from "@workspace/types";
 import { vaultClient } from "../lib/vaultClient";
 

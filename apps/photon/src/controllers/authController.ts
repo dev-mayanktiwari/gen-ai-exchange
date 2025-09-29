@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { asyncErrorHandler, httpError } from "@workspace/utils";
 import { ErrorStatusCodes } from "@workspace/constants";
-import { UserLoginInput, UserRegistrationInput, AuthenticatedRequest } from "@workspace/types";
+import {
+  UserLoginInput,
+  UserRegistrationInput,
+  AuthenticatedRequest,
+} from "@workspace/types";
 import { AuthService } from "../service/authService";
 
 export default {

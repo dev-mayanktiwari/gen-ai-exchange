@@ -1,4 +1,4 @@
-export type THTTPResponse = {
+export type THTTPResponse<T> = {
   success: boolean;
   statusCode: number;
   request: {
@@ -7,5 +7,8 @@ export type THTTPResponse = {
     url: string;
   };
   message: string;
-  data: unknown;
+  data: T | null;
+  trace?: {
+    error: string | undefined;
+  };
 };

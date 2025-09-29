@@ -1,7 +1,8 @@
 import axios, { AxiosInstance } from "axios";
+import { AppConfig } from "../config";
 
-const VAULT_URL = process.env.VAULT_URL || "http://localhost:4001";
-const VAULT_API_KEY = process.env.VAULT_API_KEY;
+const VAULT_URL = String(AppConfig.get("VAULT_URL")) || "http://localhost:4001";
+const VAULT_API_KEY = String(AppConfig.get("VAULT_API_KEY"));
 
 if (!VAULT_API_KEY) {
   throw new Error("VAULT_API_KEY environment variable is required");
@@ -21,7 +22,9 @@ vaultClient.interceptors.request.use(
   (config) => {
     // Don't log the API key in production
     if (process.env.NODE_ENV !== "production") {
-      console.log(`Vault Request: ${config.method?.toUpperCase()} ${config.url}`);
+      console.log(
+        `Vault Request: ${config.method?.toUpperCase()} ${config.url}`
+      );
     }
     return config;
   },
@@ -34,9 +37,19 @@ vaultClient.interceptors.request.use(
 vaultClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.log("Vault Response Error:", error.response?.data);
+
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.error("Vault authentication failed - check API key");
     }
-    return Promise.reject(error);
+
+    // Extract error message from vault response
+    const errorMessage =
+      error.response?.data?.message ||
+      error.response?.data?.error?.message ||
+      error.message ||
+      "Unknown error from vault";
+
+    return Promise.reject(new Error(errorMessage));
   }
 );

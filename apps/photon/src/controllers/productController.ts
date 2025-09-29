@@ -9,8 +9,6 @@ import {
 import { ProductService } from "../service/productService";
 import { AppConfig } from "../config";
 import { StorageService } from "../service/storageService";
-// import { JobService } from "../service/jobService";
-// import { PubSubService } from "../service/pubSubService";
 
 export default {
   create: asyncErrorHandler(

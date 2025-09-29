@@ -2,8 +2,10 @@ import { logger } from "@workspace/utils";
 import { getStorageClient } from "../lib/storage";
 import { GetSignedUploadUrlRequest, SignedUrlResponse } from "@workspace/types";
 import { vaultClient } from "../lib/vaultClient";
+import { AppConfig } from "../config";
 
-const USE_VAULT_FOR_STORAGE = process.env.USE_VAULT_FOR_STORAGE === "true";
+const USE_VAULT_FOR_STORAGE =
+  String(AppConfig.get("USE_VAULT_FOR_STORAGE")) === "true";
 
 export const StorageService = {
   async getSignedUploadUrl(

@@ -70,6 +70,82 @@ importers:
         specifier: ^5.7.3
         version: 5.7.3
 
+  apps/guard:
+    dependencies:
+      '@google-cloud/firestore':
+        specifier: ^7.11.3
+        version: 7.11.3
+      '@google-cloud/pubsub':
+        specifier: ^5.2.0
+        version: 5.2.0
+      '@google-cloud/storage':
+        specifier: ^7.17.1
+        version: 7.17.1
+      '@workspace/constants':
+        specifier: workspace:*
+        version: link:../../packages/constants
+      '@workspace/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@workspace/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
+      express:
+        specifier: ^4.19.2
+        version: 4.21.2
+      firebase-admin:
+        specifier: ^13.5.0
+        version: 13.5.0
+      helmet:
+        specifier: ^8.1.0
+        version: 8.1.0
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
+    devDependencies:
+      '@types/cookie-parser':
+        specifier: ^1.4.8
+        version: 1.4.8(@types/express@5.0.2)
+      '@types/cors':
+        specifier: ^2.8.18
+        version: 2.8.18
+      '@types/dotenv':
+        specifier: ^8.2.3
+        version: 8.2.3
+      '@types/express':
+        specifier: ^5.0.2
+        version: 5.0.2
+      '@types/jsonwebtoken':
+        specifier: ^9.0.9
+        version: 9.0.9
+      '@types/node':
+        specifier: ^20.17.19
+        version: 20.17.19
+      '@types/uuid':
+        specifier: ^10.0.0
+        version: 10.0.0
+      '@workspace/vault-sdk':
+        specifier: workspace:*
+        version: link:../../packages/vault-sdk
+      esbuild:
+        specifier: ^0.25.4
+        version: 0.25.4
+      nodemon:
+        specifier: ^3.1.10
+        version: 3.1.10
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@20.17.19)(typescript@5.8.3)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
   apps/photon:
     dependencies:
       '@google-cloud/storage':
@@ -362,6 +438,41 @@ importers:
       winston-mongodb:
         specifier: ^6.0.0
         version: 6.0.0(socks@2.8.4)(winston@3.17.0)
+    devDependencies:
+      '@types/express':
+        specifier: ^5.0.2
+        version: 5.0.2
+
+  packages/vault-client:
+    dependencies:
+      '@workspace/constants':
+        specifier: workspace:*
+        version: link:../constants
+      '@workspace/types':
+        specifier: workspace:*
+        version: link:../types
+      axios:
+        specifier: ^1.12.2
+        version: 1.12.2
+    devDependencies:
+      '@types/express':
+        specifier: ^5.0.2
+        version: 5.0.2
+
+  packages/vault-sdk:
+    dependencies:
+      '@workspace/constants':
+        specifier: workspace:*
+        version: link:../constants
+      '@workspace/types':
+        specifier: workspace:*
+        version: link:../types
+      '@workspace/vault-client':
+        specifier: workspace:*
+        version: link:../vault-client
+      axios:
+        specifier: ^1.12.2
+        version: 1.12.2
     devDependencies:
       '@types/express':
         specifier: ^5.0.2
@@ -1337,6 +1448,9 @@ packages:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
 
+  axios@1.12.2:
+    resolution: {integrity: sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==}
+
   axios@1.9.0:
     resolution: {integrity: sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==}
 
@@ -1964,6 +2078,10 @@ packages:
 
   form-data@4.0.3:
     resolution: {integrity: sha512-qsITQPfmvMOSAdeyZ+12I1c+CKSstAFAwu+97zrnWAbIr5u8wfsExUzCesVLC8NgHuRUqNN4Zy6UPWUTRGslcA==}
+    engines: {node: '>= 6'}
+
+  form-data@4.0.4:
+    resolution: {integrity: sha512-KrGhL9Q4zjj0kiUt5OO4Mr/A/jlI2jDYs5eHBpYHPcBEVSiipAvn2Ko2HnPe20rmcuuvMHNdZFp+4IlGTMF0Ow==}
     engines: {node: '>= 6'}
 
   formdata-polyfill@4.0.10:
@@ -4702,6 +4820,14 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
+  axios@1.12.2:
+    dependencies:
+      follow-redirects: 1.15.9
+      form-data: 4.0.4
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
   axios@1.9.0:
     dependencies:
       follow-redirects: 1.15.9
@@ -5582,6 +5708,14 @@ snapshots:
       safe-buffer: 5.2.1
 
   form-data@4.0.3:
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      es-set-tostringtag: 2.1.0
+      hasown: 2.0.2
+      mime-types: 2.1.35
+
+  form-data@4.0.4:
     dependencies:
       asynckit: 0.4.0
       combined-stream: 1.0.8

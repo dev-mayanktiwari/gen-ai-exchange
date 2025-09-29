@@ -4,7 +4,11 @@ import { httpError, logger } from "@workspace/utils";
 import { NextFunction, Request, Response } from "express";
 import { AuthService } from "../service/authService";
 
-export async function verifyToken(req: Request, res: Response, next: NextFunction) {
+export async function verifyToken(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return httpError(

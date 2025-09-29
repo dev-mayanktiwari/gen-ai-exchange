@@ -1,0 +1,15 @@
+{
+  "name": "@workspace/vault-client",
+  "version": "0.0.0",
+  "dependencies": {
+    "@workspace/constants": "workspace:*",
+    "@workspace/types": "workspace:*",
+    "axios": "^1.12.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.2"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

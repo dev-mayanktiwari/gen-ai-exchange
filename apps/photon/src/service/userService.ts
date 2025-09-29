@@ -2,7 +2,10 @@ import { CreateOrUpdateUserRequest, UserResponse } from "@workspace/types";
 import { vaultClient } from "../lib/vaultClient";
 
 export const userService = {
-  async createOrUpdateUser(userId: string, userData: CreateOrUpdateUserRequest) {
+  async createOrUpdateUser(
+    userId: string,
+    userData: CreateOrUpdateUserRequest
+  ) {
     const response = await vaultClient.put(`/users/${userId}`, userData);
     return response.data;
   },
