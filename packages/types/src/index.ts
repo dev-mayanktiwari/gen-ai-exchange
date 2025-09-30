@@ -3,4 +3,4 @@ export * from "./jwt";
 export * from "./namespace";
 export * from "./custom";
 export * from "./entities";
-export * from "./vault";
+export * from "./vault-responses";

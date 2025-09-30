@@ -4,10 +4,9 @@ export const VAULT_ENDPOINTS = {
     LOGIN: "/auth/login",
   },
   PRODUCTS: {
-    CREATE_PRODUCT: "/products",
-    GET_PRODUCT: "/products/:productId",
-    LIST_PRODUCTS: "/products",
-    UPDATE_PRODUCT: (productId: string) => `/products/${productId}`,
-    DELETE_PRODUCT: (productId: string) => `/products/${productId}`,
+    CREATE_PRODUCT: "/products/draft",
+    GET_PRODUCT: (productId: string) => `/products/${productId}`,
+    UPLOAD_COMPLETE: (productId: string) =>
+      `/products/${productId}/upload-complete`,
   },
 } as const;

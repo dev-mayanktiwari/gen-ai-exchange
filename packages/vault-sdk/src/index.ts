@@ -9,6 +9,12 @@ export class VaultSDK extends VaultClient {
   auth = {
     register: this.createUser.bind(this),
   };
+
+  products = {
+    createDraft: this.createDraftProduct.bind(this),
+    markUploadComplete: this.markUploadComplete.bind(this),
+    getProductStatus: this.getProductStatus.bind(this),
+  };
 }
 
 export function createVaultSDK(baseURL: string): VaultSDK {
